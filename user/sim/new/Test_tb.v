@@ -16,6 +16,7 @@ module Test_tb ();
     rst = 1;
     clk = 1;
     #10;
+    #2;
     rst = 0;
     #10;
     #10;

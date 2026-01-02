@@ -4,7 +4,7 @@ module Pipeline_Ex (
     input [31:0] Rs2_in_EX,  //操作数2输入
     input [31:0] Imm_in_EX,  //立即数输入
     input ALUSrc_B_in_EX,  //ALU B选择
-    input [2:0] ALU_control_in_EX,  //ALU选择控制
+    input [3:0] ALU_control_in_EX,  //ALU选择控制
     output [31:0] PC_out_EX,  //PC输出
     output [31:0] PC4_out_EX,  //PC+4输出
     output zero_out_EX,  //ALU判0输出

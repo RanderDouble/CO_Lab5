@@ -24,7 +24,7 @@ module Ex_reg_Mem (
     output reg BranchN_out_EXMem,  //Bne
     output reg MemRW_out_EXMem,  //存储器读写
     output reg Jump_out_EXMem,  //Jal
-    output reg MemtoReg_out_EXMem,  //写回
+    output reg [1:0] MemtoReg_out_EXMem,  //写回
     output reg RegWrite_out_EXMem  //寄存器堆读写
 );
   always @(negedge clk_EXMem or posedge rst_EXMem) begin
@@ -39,7 +39,7 @@ module Ex_reg_Mem (
       BranchN_out_EXMem <= 1'b0;
       MemRW_out_EXMem <= 1'b0;
       Jump_out_EXMem <= 1'b0;
-      MemtoReg_out_EXMem <= 1'b0;
+      MemtoReg_out_EXMem <= 2'b0;
       RegWrite_out_EXMem <= 1'b0;
     end else if (en_EXMem) begin
       PC_out_EXMem <= PC_in_EXMem;

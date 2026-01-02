@@ -26,4 +26,3 @@ module Regs (
   end
 
 endmodule
-

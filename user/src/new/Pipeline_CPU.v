@@ -19,7 +19,7 @@ module Pipeline_CPU (
   wire [31:0] PC_out_IFID_0;
   wire [31:0] inst_out_IFID_0;
 
-  wire [31:0] Rd_addr_out_ID_0;
+  wire [4:0] Rd_addr_out_ID_0;
   wire [31:0] Rs1_out_ID_0;
   wire [31:0] Rs2_out_ID_0;
   wire [31:0] Imm_out_ID_0;

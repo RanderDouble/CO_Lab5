@@ -8,7 +8,7 @@ module ID_reg_Ex (
     input [31:0] Rs2_in_IDEX,  //操作数2输如
     input [31:0] Imm_in_IDEX,  //立即数输入
     input ALUSrc_B_in_IDEX,  //ALU B输入选择
-    input [2:0] ALU_control_in_IDEX,  //ALU选择控制
+    input [3:0] ALU_control_in_IDEX,  //ALU选择控制
     input Branch_in_IDEX,  //Beq
     input BranchN_in_IDEX,  //Bne
     input MemRW_in_IDEX,  //存储器读写
@@ -21,7 +21,7 @@ module ID_reg_Ex (
     output reg [31:0] Rs2_out_IDEX,  //操作数2输出
     output reg [31:0] Imm_out_IDEX,  //立即数输出
     output reg ALUSrc_B_out_IDEX,  //ALU B选择
-    output reg [2:0] ALU_control_out_IDEX,  //ALU控制
+    output reg [3:0] ALU_control_out_IDEX,  //ALU控制
     output reg Branch_out_IDEX,  //Beq
     output reg BranchN_out_IDEX,  //Bne
     output reg MemRW_out_IDEX,  //存储器读写
@@ -37,7 +37,7 @@ module ID_reg_Ex (
       Rs2_out_IDEX <= 32'b0;
       Imm_out_IDEX <= 32'b0;
       ALUSrc_B_out_IDEX <= 1'b0;
-      ALU_control_out_IDEX <= 3'b0;
+      ALU_control_out_IDEX <= 4'b0;
       Branch_out_IDEX <= 1'b0;
       BranchN_out_IDEX <= 1'b0;
       MemRW_out_IDEX <= 1'b0;
