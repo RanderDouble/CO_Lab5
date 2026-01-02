@@ -1,0 +1,7 @@
+.vscode/
+.Xil/
+prj/
+
+*.vcd
+*.view
+*.str
