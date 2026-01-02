@@ -124,8 +124,7 @@ module Pipeline_CPU (
       .MemRW_ID       (MemRW_ID_0),
       .Jump_ID        (Jump_ID_0),
       .MemtoReg_ID    (MemtoReg_ID_0),
-      .RegWrite_out_ID(RegWrite_out_ID_0),
-      .imm_sel        (imm_sel)
+      .RegWrite_out_ID(RegWrite_out_ID_0)
   );
 
   ID_reg_Ex id_ex (

@@ -3,7 +3,7 @@ module IF_reg_ID (
     input rst_IFID,  //寄存器复位
     input en_IFID,  //寄存器使能
     input [31:0] PC_in_IFID,  //PC输入
-    input [31:0] inst_in_IFID,  //指令输入
+    input [31:0] Inst_in_IFID,  //指令输入
     output reg [31:0] PC_out_IFID,  //PC输出
     output reg [31:0] inst_out_IFID  //指令输出
 );

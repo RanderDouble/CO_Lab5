@@ -2,27 +2,26 @@ module Pipeline_ID (
     input clk_ID,
     //时钟
     input rst_ID,  //复位
-    input RegWrite _in_ID,  //寄存器堆使能
+    input RegWrite_in_ID,  //寄存器堆使能
     input [4:0] Rd_addr_ID,  //写目的地址输入
     input [31:0] Wt_data_ID,  //写数据输入
     input [31:0] Inst_in_ID,  //指令输入
-    output reg [31:0] Rd_addr_out_ID,  //写目的地址输出
-    output reg [31:0] Rs1_out_ID,
-    //操作数1输出
-    output reg [31:0] Rs2_out_ID,  //操作数2输出
-    output reg [31:0] Imm_out_ID,  //立即数输出
-    output reg ALUSrc_B_ID,  //ALU B端输入选择
-    output reg [2:0] ALU_control_ID,  //ALU控制
-    output reg Branch_ID,  //Beq控制
-    output reg BranchN_ID,  //Bne控制
-    output reg MemRW_ID,  //存储器读写
-    output reg Jump_ID,  //Jal控制
-    output reg [1:0] MemtoReg_ID,  //寄存器写回选择
-    output reg RegWrite_out_ID  //寄存器堆读写
+    output [31:0] Rd_addr_out_ID,  //写目的地址输出
+    output [31:0] Rs1_out_ID,  //操作数1输出
+    output [31:0] Rs2_out_ID,  //操作数2输出
+    output [31:0] Imm_out_ID,  //立即数输出
+    output ALUSrc_B_ID,  //ALU B端输入选择
+    output [2:0] ALU_control_ID,  //ALU控制
+    output Branch_ID,  //Beq控制
+    output BranchN_ID,  //Bne控制
+    output MemRW_ID,  //存储器读写
+    output Jump_ID,  //Jal控制
+    output [1:0] MemtoReg_ID,  //寄存器写回选择
+    output RegWrite_out_ID  //寄存器堆读写
 );
   assign Rd_addr_ID = Inst_in_ID[11:7];
   // output declaration of module SCPU_ctrl
-  reg [2:0] ImmSel;
+  wire [2:0] ImmSel;
 
   SCPU_ctrl u_SCPU_ctrl (
       .OPcode     (Inst_in_ID[6:2]),
