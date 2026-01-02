@@ -33,7 +33,7 @@ loop2:
   addi x23,x10,0x1   #x23= 0x2
   or   x24,x16,x9    #x24= 0xFFFFFFFF
   xor  x25,x19,x11   #x25= 0x0
-  andi x26,x20,0xFF  #x26= 0x200000FF
+  andi x26,x20,0xFF  #x26= 0x0
   add  x27,x18,x3    #x27= 0x80000001
   srl  x28,x20,x2    #x28= 0x10000000
   ori  x29,x19,0xAF  #x29= 0xAF

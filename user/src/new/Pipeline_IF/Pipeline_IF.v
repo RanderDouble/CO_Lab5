@@ -4,12 +4,13 @@ module Pipeline_IF (
     input en_IF,  //使能
     input [31:0] PC_in_IF,  //取指令PC输入
     input PCSrc,  //PC输入选择
+    input Control_stall_IF,  //控制冒险暂停信号
     output [31:0] PC_out_IF
 );
   REG32 u_REG32 (
       .clk(clk_IF),
       .rst(rst_IF),
-      .CE (en_IF),
+      .CE (en_IF & ~Control_stall_IF),
       .D  (PCSrc ? PC_in_IF : PC_out_IF + 4),
       .Q  (PC_out_IF)
   );

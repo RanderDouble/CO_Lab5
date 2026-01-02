@@ -2,6 +2,9 @@ module Ex_reg_Mem (
     input clk_EXMem,  //寄存器时钟
     input rst_EXMem,  //寄存器复位
     input en_EXMem,  //寄存器使能
+    input [31:0] PC_imm_EXMem, //跳转目标地址输入
+    input valid_in_EXMem, //指令有效位输入
+    input [31:0] inst_in_EXMem, //指令码输入
     input [31:0] PC_in_EXMem,  //PC输入
     input [31:0] PC4_in_EXMem,  //PC+4输入
     input [4:0] Rd_addr_EXMem,  //写目的寄存器地址输入
@@ -14,6 +17,9 @@ module Ex_reg_Mem (
     input Jump_in_EXMem,  //Jal
     input [1:0] MemtoReg_in_EXMem,  //写回
     input RegWrite_in_EXMem,  //寄存器堆读写
+    output reg [31:0] PC_imm_out_EXMem, //跳转目标地址输出
+    output reg valid_out_EXMem, //指令有效位输出
+    output reg [31:0] inst_out_EXMem, //指令码输出
     output reg [31:0] PC_out_EXMem,  //PC输出
     output reg [31:0] PC4_out_EXMem,  //PC+4输出
     output reg [4:0] Rd_addr_out_EXMem,  //写目的寄存器输出
@@ -29,6 +35,9 @@ module Ex_reg_Mem (
 );
   always @(posedge clk_EXMem or posedge rst_EXMem) begin
     if (rst_EXMem) begin
+      PC_imm_out_EXMem <= 32'b0;
+      valid_out_EXMem <= 1'b0;
+      inst_out_EXMem <= 32'b0;
       PC_out_EXMem <= 32'b0;
       PC4_out_EXMem <= 32'b0;
       Rd_addr_out_EXMem <= 5'b0;
@@ -42,6 +51,9 @@ module Ex_reg_Mem (
       MemtoReg_out_EXMem <= 2'b0;
       RegWrite_out_EXMem <= 1'b0;
     end else if (en_EXMem) begin
+      PC_imm_out_EXMem <= PC_imm_EXMem;
+      valid_out_EXMem <= valid_in_EXMem;
+      inst_out_EXMem <= inst_in_EXMem;
       PC_out_EXMem <= PC_in_EXMem;
       PC4_out_EXMem <= PC4_in_EXMem;
       Rd_addr_out_EXMem <= Rd_addr_EXMem;

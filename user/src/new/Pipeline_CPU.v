@@ -11,7 +11,9 @@ module Pipeline_CPU (
     output [31:0] MemRW_Mem,  //访存阶段存储器读写
     output [31:0] Addr_out,  //地址输出
     output [31:0] Data_out,  //CPU数据输出
-    output [31:0] Data_out_WB  //写回数据输出
+    output [31:0] Data_out_WB,  //写回数据输出
+    output [2:0] imm_sel,
+    output [31:0] Imm_out_ID
 );
 
   wire [31:0] PC_out_IF_0;
@@ -76,6 +78,30 @@ module Pipeline_CPU (
 
   wire [31:0] Data_out_WB_0;
 
+  wire en_IF_0;
+  wire en_IFID_0;
+  wire NOP_IFID_0;
+  wire NOP_IDEX_0;
+  wire Control_stall_IF_0;
+
+  wire valid_IFID_0;
+
+  wire [4:0] Rs1_addr_ID_0;
+  wire [4:0] Rs2_addr_ID_0;
+  wire Rs1_used_0;
+  wire Rs2_used_0;
+
+  wire [31:0] inst_out_IDEX_0;
+  wire valid_out_IDEX_0;
+
+  wire [31:0] PC_imm_out_EXMem_0;
+  wire valid_out_EXMem_0;
+  wire [31:0] inst_out_EXMem_0;
+
+  wire [31:0] PC_out_MemWB_0;
+  wire [31:0] inst_out_MemWB_0;
+  wire valid_out_MemWB_0;
+
   assign Imm_out_ID = Imm_out_ID_0;
   assign PC_out_Ex = PC_out_EX_0;
   assign PC_out_ID = PC_out_IFID_0;
@@ -90,20 +116,23 @@ module Pipeline_CPU (
   Pipeline_IF pipe_if (
       .clk_IF(clk),
       .rst_IF(rst),
-      .en_IF(1'b1),
-      .PC_in_IF(PC_out_EXMem_0),
+      .en_IF(en_IF_0),
+      .PC_in_IF(PC_imm_out_EXMem_0),
       .PCSrc(PCSrc_0),
+      .Control_stall_IF(Control_stall_IF_0),
       .PC_out_IF(PC_out_IF_0)
   );
 
   IF_reg_ID ifid (
       .clk_IFID(clk),
       .rst_IFID(rst),
-      .en_IFID(1'b1),
+      .en_IFID(en_IFID_0),
       .PC_in_IFID(PC_out_IF_0),
       .Inst_in_IFID(inst_IF),
+      .NOP_IFID(NOP_IFID_0),
       .PC_out_IFID(PC_out_IFID_0),
-      .inst_out_IFID(inst_out_IFID_0)
+      .inst_out_IFID(inst_out_IFID_0),
+      .valid_IFID(valid_IFID_0)
   );
 
   Pipeline_ID pipe_id (
@@ -116,6 +145,10 @@ module Pipeline_CPU (
       .Rd_addr_out_ID (Rd_addr_out_ID_0),
       .Rs1_out_ID     (Rs1_out_ID_0),
       .Rs2_out_ID     (Rs2_out_ID_0),
+      .Rs1_addr_ID    (Rs1_addr_ID_0),
+      .Rs2_addr_ID    (Rs2_addr_ID_0),
+      .Rs1_used       (Rs1_used_0),
+      .Rs2_used       (Rs2_used_0),
       .Imm_out_ID     (Imm_out_ID_0),
       .ALUSrc_B_ID    (ALUSrc_B_ID_0),
       .ALU_control_ID (ALU_control_ID_0),
@@ -124,13 +157,17 @@ module Pipeline_CPU (
       .MemRW_ID       (MemRW_ID_0),
       .Jump_ID        (Jump_ID_0),
       .MemtoReg_ID    (MemtoReg_ID_0),
-      .RegWrite_out_ID(RegWrite_out_ID_0)
+      .RegWrite_out_ID(RegWrite_out_ID_0),
+      .imm_sel        (imm_sel)
   );
 
   ID_reg_Ex id_ex (
       .clk_IDEX            (clk),
       .rst_IDEX            (rst),
       .en_IDEX             (1'b1),
+      .NOP_IDEX            (NOP_IDEX_0),
+      .valid_in_IDEX       (valid_IFID_0),
+      .inst_in_IDEX        (inst_out_IFID_0),
       .PC_in_IDEX          (PC_out_IFID_0),
       .Rd_addr_IDEX        (Rd_addr_out_ID_0),
       .Rs1_in_IDEX         (Rs1_out_ID_0),
@@ -156,7 +193,9 @@ module Pipeline_CPU (
       .MemRW_out_IDEX      (MemRW_out_IDEX_0),
       .Jump_out_IDEX       (Jump_out_IDEX_0),
       .MemtoReg_out_IDEX   (MemtoReg_out_IDEX_0),
-      .RegWrite_out_IDEX   (RegWrite_out_IDEX_0)
+      .RegWrite_out_IDEX   (RegWrite_out_IDEX_0),
+      .inst_out_IDEX       (inst_out_IDEX_0),
+      .valid_out_IDEX      (valid_out_IDEX_0)
   );
 
   Pipeline_Ex pipe_ex (
@@ -177,6 +216,9 @@ module Pipeline_CPU (
       .clk_EXMem         (clk),
       .rst_EXMem         (rst),
       .en_EXMem          (1'b1),
+      .PC_imm_EXMem      (PC_out_EX_0),
+      .valid_in_EXMem    (valid_out_IDEX_0),
+      .inst_in_EXMem     (inst_out_IDEX_0),
       .PC_in_EXMem       (PC_out_EX_0),
       .PC4_in_EXMem      (PC4_out_EX_0),
       .Rd_addr_EXMem     (Rd_addr_out_IDEX_0),
@@ -189,6 +231,9 @@ module Pipeline_CPU (
       .Jump_in_EXMem     (Jump_out_IDEX_0),
       .MemtoReg_in_EXMem (MemtoReg_out_IDEX_0),
       .RegWrite_in_EXMem (RegWrite_out_IDEX_0),
+      .PC_imm_out_EXMem  (PC_imm_out_EXMem_0),
+      .valid_out_EXMem   (valid_out_EXMem_0),
+      .inst_out_EXMem    (inst_out_EXMem_0),
       .PC_out_EXMem      (PC_out_EXMem_0),
       .PC4_out_EXMem     (PC4_out_EXMem_0),
       .Rd_addr_out_EXMem (Rd_addr_out_EXMem_0),
@@ -215,12 +260,18 @@ module Pipeline_CPU (
       .clk_MemWB          (clk),
       .rst_MemWB          (rst),
       .en_MemWB           (1'b1),
+      .PC_in_MemWB        (PC_out_EXMem_0),
+      .inst_in_MemWB      (inst_out_EXMem_0),
+      .valid_in_MemWB     (valid_out_EXMem_0),
       .PC4_in_MemWB       (PC4_out_EXMem_0),
       .Rd_addr_MemWB      (Rd_addr_out_EXMem_0),
       .ALU_in_MemWB       (ALU_out_EXMem_0),
       .Dmem_data_MemWB    (Data_in),
       .MemtoReg_in_MemWB  (MemtoReg_out_EXMem_0),
       .RegWrite_in_MemWB  (RegWrite_out_EXMem_0),
+      .PC_out_MemWB       (PC_out_MemWB_0),
+      .inst_out_MemWB     (inst_out_MemWB_0),
+      .valid_out_MemWB    (valid_out_MemWB_0),
       .PC4_out_MemWB      (PC4_out_MemWB_0),
       .Rd_addr_out_MemWB  (Rd_addr_out_MemWB_0),
       .ALU_out_MemWB      (ALU_out_MemWB_0),
@@ -237,5 +288,32 @@ module Pipeline_CPU (
       .Data_out_WB(Data_out_WB_0)
   );
 
+  stall stall_0 (
+      .rst_stall(rst),
+      .RegWrite_out_IDEX(RegWrite_out_IDEX_0),
+      .Rd_addr_out_IDEX(Rd_addr_out_IDEX_0),
+      .RegWrite_out_EXMem(RegWrite_out_EXMem_0),
+      .Rd_addr_out_EXMem(Rd_addr_out_EXMem_0),
+      .RegWrite_out_MemWB(RegWrite_out_MemWB_0),
+      .Rd_addr_out_MemWB(Rd_addr_out_MemWB_0),
+      .Rs1_addr_ID(Rs1_addr_ID_0),
+      .Rs2_addr_ID(Rs2_addr_ID_0),
+      .Rs1_used(Rs1_used_0),
+      .Rs2_used(Rs2_used_0),
+      .Branch_ID(Branch_ID_0),
+      .BranchN_ID(BranchN_ID_0),
+      .Jump_ID(Jump_ID_0),
+      .Branch_out_IDEX(Branch_out_IDEX_0),
+      .BranchN_out_IDEX(BranchN_out_IDEX_0),
+      .Jump_out_IDEX(Jump_out_IDEX_0),
+      .Branch_out_EXMem(Branch_out_EXMem_0),
+      .BranchN_out_EXMem(BranchN_out_EXMem_0),
+      .Jump_out_EXMem(Jump_out_EXMem_0),
+      .en_IF(en_IF_0),
+      .en_IFID(en_IFID_0),
+      .NOP_IFID(NOP_IFID_0),
+      .NOP_IDEX(NOP_IDEX_0),
+      .Control_stall_IF(Control_stall_IF_0)
+  );
 
 endmodule

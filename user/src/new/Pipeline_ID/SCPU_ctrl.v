@@ -17,11 +17,13 @@ module SCPU_ctrl (
     output reg       CPU_MIO,
     output reg       ecall,
     output reg       mret,
-    output reg       ill_instr
+    output reg       ill_instr,
+    output reg       Rs1_used,
+    output reg       Rs2_used
 );
   reg [ 1:0] ALUop;
   reg [ 3:0] Fun;
-  reg [10:0] CPUCtrl;  // Expanded control signals
+  reg [12:0] CPUCtrl;  // Expanded control signals
 
   always @* begin
     CPU_MIO = 1'b0;
@@ -31,53 +33,53 @@ module SCPU_ctrl (
     mret = 1'b0;
     ill_instr = 1'b0;
 
-    // CPUCtrl = {ALUSrc_B, MemtoReg, Jump, Branch, BranchN, RegWrite, MemRW, ALUop}
+    // CPUCtrl = {ALUSrc_B, MemtoReg, Jump, Branch, BranchN, RegWrite, MemRW, ALUop, Rs1_used, Rs2_used}
 
     case (OPcode)
       5'b01100: begin  // R-type
-        CPUCtrl = 11'b0_00_00_0_0_1_0_10;
+        CPUCtrl = 13'b0_00_00_0_0_1_0_10_1_1;
         ImmSel  = 3'b000;
       end
       5'b00000: begin  // Load (I-type)
-        CPUCtrl = 11'b1_01_00_0_0_1_0_00;
+        CPUCtrl = 13'b1_01_00_0_0_1_0_00_1_0;
         ImmSel  = 3'b001;
       end
       5'b01000: begin  // Store (S-type)
-        CPUCtrl = 11'b1_00_00_0_0_0_1_00;
+        CPUCtrl = 13'b1_00_00_0_0_0_1_00_1_1;
         ImmSel  = 3'b010;
       end
       5'b11000: begin  // Branch (B-type)
-        if (Fun3 == 3'b000) CPUCtrl = 11'b0_00_00_1_0_0_0_01;  // beq
-        else if (Fun3 == 3'b001) CPUCtrl = 11'b0_00_00_0_1_0_0_01;  // bne
+        if (Fun3 == 3'b000) CPUCtrl = 13'b0_00_00_1_0_0_0_01_1_1;  // beq
+        else if (Fun3 == 3'b001) CPUCtrl = 13'b0_00_00_0_1_0_0_01_1_1;  // bne
         else if (Fun3 == 3'b101) begin
-          CPUCtrl   = 11'b0_00_00_0_0_0_0_00;  // illegal branch encoding
+          CPUCtrl   = 13'b0_00_00_0_0_0_0_00_0_0;  // illegal branch encoding
           ill_instr = 1'b1;
-        end else CPUCtrl = 11'b0_00_00_0_0_0_0_00;
+        end else CPUCtrl = 13'b0_00_00_0_0_0_0_00_0_0;
         ImmSel = 3'b011;
       end
       5'b11011: begin  // JAL (J-type)
-        CPUCtrl = 11'b0_10_01_0_0_1_0_00;
+        CPUCtrl = 13'b0_10_01_0_0_1_0_00_0_0;
         ImmSel  = 3'b100;
       end
       5'b11001: begin  // JALR (I-type)
-        CPUCtrl = 11'b1_10_10_0_0_1_0_00;  // Jump=10 for JALR
+        CPUCtrl = 13'b1_10_10_0_0_1_0_00_1_0;  // Jump=10 for JALR
         ImmSel  = 3'b001;
       end
       5'b00100: begin  // I-type ALU
-        CPUCtrl = 11'b1_00_00_0_0_1_0_10;
+        CPUCtrl = 13'b1_00_00_0_0_1_0_10_1_0;
         ImmSel  = 3'b001;
       end
       5'b01101: begin  // LUI (U-type)
-        CPUCtrl = 11'b1_11_00_0_0_1_0_00;  // MemtoReg=11
+        CPUCtrl = 13'b1_11_00_0_0_1_0_00_0_0;  // MemtoReg=11
         ImmSel  = 3'b000;  // New U-type ImmSel
       end
       default: begin
-        CPUCtrl = 11'b0_00_00_0_0_0_0_00;
+        CPUCtrl = 13'b0_00_00_0_0_0_0_00_0_0;
         ImmSel  = 3'b000;
       end
     endcase
 
-    {ALUSrc_B, MemtoReg, Jump, Branch, BranchN, RegWrite, MemRW, ALUop} = CPUCtrl;
+    {ALUSrc_B, MemtoReg, Jump, Branch, BranchN, RegWrite, MemRW, ALUop, Rs1_used, Rs2_used} = CPUCtrl;
 
     // Fix Fun signal for I-type vs R-type
     if (OPcode == 5'b00100 && (Fun3 == 3'b001 || Fun3 == 3'b101)) Fun = {Fun7, Fun3};

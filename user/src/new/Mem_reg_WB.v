@@ -2,12 +2,18 @@ module Mem_reg_WB (
     input clk_MemWB,  //寄存器时
     input rst_MemWB,  //寄存器复位
     input en_MemWB,  //寄存器使能
+    input [31:0] PC_in_MemWB, //当前PC输入
+    input [31:0] inst_in_MemWB, //指令码输入
+    input valid_in_MemWB, //指令有效位输入
     input [31:0] PC4_in_MemWB,  //PC+4输入
     input [4:0] Rd_addr_MemWB,  //写目的地址输入
     input [31:0] ALU_in_MemWB,  //ALU输入
     input [31:0] Dmem_data_MemWB,  //存储器数据输入
     input [1:0] MemtoReg_in_MemWB,  //写回
     input RegWrite_in_MemWB,  //寄存器堆读写
+    output reg [31:0] PC_out_MemWB, //当前PC输出
+    output reg [31:0] inst_out_MemWB, //指令码输出
+    output reg valid_out_MemWB, //指令有效位输出
     output reg [31:0] PC4_out_MemWB,  //PC+4输出
     output reg [4:0] Rd_addr_out_MemWB,  //写目的地址输出
     output reg [31:0] ALU_out_MemWB,  //ALU输出
@@ -17,6 +23,9 @@ module Mem_reg_WB (
 );
   always @(posedge clk_MemWB or posedge rst_MemWB) begin
     if (rst_MemWB) begin
+      PC_out_MemWB <= 32'b0;
+      inst_out_MemWB <= 32'b0;
+      valid_out_MemWB <= 1'b0;
       PC4_out_MemWB <= 32'b0;
       Rd_addr_out_MemWB <= 5'b0;
       ALU_out_MemWB <= 32'b0;
@@ -24,6 +33,9 @@ module Mem_reg_WB (
       MemtoReg_out_MemWB <= 2'b0;
       RegWrite_out_MemWB <= 1'b0;
     end else if (en_MemWB) begin
+      PC_out_MemWB <= PC_in_MemWB;
+      inst_out_MemWB <= inst_in_MemWB;
+      valid_out_MemWB <= valid_in_MemWB;
       PC4_out_MemWB <= PC4_in_MemWB;
       Rd_addr_out_MemWB <= Rd_addr_MemWB;
       ALU_out_MemWB <= ALU_in_MemWB;
