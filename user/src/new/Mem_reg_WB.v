@@ -15,7 +15,7 @@ module Mem_reg_WB (
     output reg [1:0] MemtoReg_out_MemWB,  //写回
     output reg RegWrite_out_MemWB  //寄存器堆读写
 );
-  always @(negedge clk_MemWB or posedge rst_MemWB) begin
+  always @(posedge clk_MemWB or posedge rst_MemWB) begin
     if (rst_MemWB) begin
       PC4_out_MemWB <= 32'b0;
       Rd_addr_out_MemWB <= 5'b0;

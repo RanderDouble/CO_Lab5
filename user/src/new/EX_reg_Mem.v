@@ -27,7 +27,7 @@ module Ex_reg_Mem (
     output reg [1:0] MemtoReg_out_EXMem,  //写回
     output reg RegWrite_out_EXMem  //寄存器堆读写
 );
-  always @(negedge clk_EXMem or posedge rst_EXMem) begin
+  always @(posedge clk_EXMem or posedge rst_EXMem) begin
     if (rst_EXMem) begin
       PC_out_EXMem <= 32'b0;
       PC4_out_EXMem <= 32'b0;

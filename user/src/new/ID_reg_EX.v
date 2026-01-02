@@ -29,7 +29,7 @@ module ID_reg_Ex (
     output reg [1:0] MemtoReg_out_IDEX,  //写回
     output reg RegWrite_out_IDEX  //寄存器堆读写
 );
-  always @(negedge clk_IDEX or posedge rst_IDEX) begin
+  always @(posedge clk_IDEX or posedge rst_IDEX) begin
     if (rst_IDEX) begin
       PC_out_IDEX <= 32'b0;
       Rd_addr_out_IDEX <= 5'b0;

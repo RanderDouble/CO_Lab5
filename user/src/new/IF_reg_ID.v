@@ -7,7 +7,7 @@ module IF_reg_ID (
     output reg [31:0] PC_out_IFID,  //PC输出
     output reg [31:0] inst_out_IFID  //指令输出
 );
-  always @(negedge clk_IFID or posedge rst_IFID) begin
+  always @(posedge clk_IFID or posedge rst_IFID) begin
     if (rst_IFID) begin
       PC_out_IFID   <= 32'b0;
       inst_out_IFID <= 32'b0;
